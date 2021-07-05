@@ -109,7 +109,7 @@
 
 
 <fieldset class="form-group PutField">
-<label   class="lang" key="Put">Put Coins<label style="color:red">*</label></label>
+<label   class="lang" key="Put">Put ETH<label style="color:red">*</label></label>
 <input id="PutCoins" class="form-control " type="text" placeholder="0.00001-9999999"/>
 </fieldset>
 
@@ -446,7 +446,7 @@ async function GetRewardPool(){
   await myContract.methods.RewardPool().call({from: web3.currentProvider.selectedAddress}, function(error, result){
     if(!error){
         console.log("RewardPool:",result);
-document.getElementById("RewardPool").innerHTML="Reward coins Pool:"+web3.utils.fromWei(result, "ether" ) ;
+document.getElementById("RewardPool").innerHTML="Reward ETH Pool:"+web3.utils.fromWei(result, "ether" ) ;
        
 
     }else{
