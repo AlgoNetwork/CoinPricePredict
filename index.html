@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="js/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+    <title>Predict Bitcoin Price DApp</title>
+    <script src="js/jquery.min.js"></script>
+	<script src="js/jsdelivr.js"></script>
+
+
+
+<script src="js/web3.min.js"></script>
+<style type="text/css">
+#loader {
+  width: 200px;
+  display: none;
+}
+
+
+#timer div {
+   background-color: #b1afde;
+   color: #ffffff;
+   width: 100px;
+   height: 105px;
+   border-radius: 5px;
+   font-size: 35px;
+   font-weight: 700;
+   margin-left: 10px;
+   margin-right: 10px;
+   margin-top: 10px;
+   margin-bottom: 10px;
+}
+#timer div span {
+   display: block;
+   margin-top: -2px;
+   font-size: 15px;
+   font-weight: 500;
+}
+
+@media only screen and (max-width: 1080px) {
+   #timer {
+     margin-top: -20px;
+   }
+   #timer div {
+     width: 95px;
+     height: 100px;
+     font-size: 32px;
+     margin-top: 20px;
+  }
+  #timer div span {
+    font-size: 14px;
+  }
+}
+
+</style>
+
+</head>
+
+<body class="text-secondary font-weight-light">
+	<nav class="navbar navbar-dark bg-dark">
+	    <a class="navbar-brand" href="#">
+           Bitcoin Predict Game
+	    </a>
+		<span class="navbar-brand mb-0"></span>
+	</nav>
+
+    <div class="container mt-5">
+    	<center>
+	    	<div class="col-md-5">
+
+
+<div id="getting-started"></div>
+
+
+<div id="timer" class=" d-flex justify-content-center">
+    <div id="days" class="align-items-center flex-column d-flex justify-content-center"></div>
+    <div id="hours" class="align-items-center flex-column d-flex justify-content-center"></div>
+    <div id="minutes" class="align-items-center flex-column d-flex justify-content-center"></div>
+    <div id="seconds" class="align-items-center flex-column d-flex justify-content-center"></div>
+</div>
+<br><br>
+<!--<div id="TimeCountDown" class="alert alert-primary" role="alert">-->
+
+</div>
+
+ 
+
+
+
+
+
+<div id="instructor"></div>
+
+ <div id="OverTime"  class="alert alert-danger"  style="display:none"  role="alert"> This forecast has ended, please look forward to the next forecast.</div>
+
+ <div id="RewardPool"  class="alert alert-success" role="alert">-</div>
+ <div id="BTCPrice"  class="alert alert-info" role="alert">-</div>
+ 
+<fieldset class="form-group PriceField">
+<label   class="lang" key="Price">I predict the price that Bitcoin will reach in the rest of the time:  <label style="color:red">*</label></label>
+<input id="price" class="form-control " type="text" placeholder="1-9999999" />
+
+</fieldset>
+
+
+<fieldset class="form-group PutField">
+<label   class="lang" key="Put">Put Coins<label style="color:red">*</label></label>
+<input id="PutCoins" class="form-control " type="text" placeholder="0.00001-9999999"/>
+</fieldset>
+
+
+<img id="loader" src="loading.gif"></img>
+
+
+<td><button id="GuessButton"   class="btn btn-primary">Guess</button></td>
+
+<br><br><br><br>
+<div id="EventLog"  class="alert alert-secondary" role="alert">  The closer the predicted price is to the final price, and the greater the transaction volume, the more rewards you will receive. The game suspends user participation three hours in advance to avoid the price approaching the final result.</div>
+
+   <div id="EventTable">  </div>
+
+
+
+
+
+
+
+
+
+
+
+<!--<td><button id="exitButton"  style="display: none;" class="btn btn-primary">Havest - 收获</button></td>-->
+
+   <p class="small mt-5">Developed with  <i class="fas fa-heart mr-1 text-danger"></i>by <a href="https://www.youtube.com/c/" class="font-weight-bold text-danger" target="_blank"> Guess</a></p>
+<!--
+<td><button id="WithdrawButton"  style="display: none;" class="btn btn-primary">withdraw</button></td>
+<td><button id="getRewardButton" style="display: none;" class="btn btn-primary">getReward</button></td>
+
+
+<td><button id="setDuration" class="btn btn-primary">setDuration</button></td>-->
+  
+	    	</div>
+	    	</br>
+
+         
+    	</center>
+        <hr>
+    </div>
+
+    <script src="js/all.min.js" integrity="sha256-qM7QTJSlvtPSxVRjVWNM2OfTAz/3k5ovHOKmKXuYMO4=" crossorigin="anonymous"></script>
+    <script src="js/contract.js"></script>
+    <script src="js/token.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+        integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+$("#approveThisButton").hide();
+$("#DepositButton").hide();
+$("#WithdrawButton").hide();
+$("#getRewardButton").hide();
+$("#DepositDiv").hide();
+
+
+
+
+var myContract;
+var TransferContract;
+var TokenContract;
+
+        async function CheckMetamaskConnection() {
+            // Modern dapp browsers...
+            if (window.ethereum) {
+                window.web3 = new Web3(window.ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    return true;
+                } catch (error) {
+                    // User denied account access...
+                    return false;
+                }
+            }
+            // Legacy dapp browsers...
+            else if (window.web3) {
+                window.web3 = new Web3(web3.currentProvider);
+                // Acccounts always exposed
+
+                return true;
+            }
+            // Non-dapp browsers...
+            else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
+                return false;
+            }
+        }
+
+        $(document).ready(async function () {
+            var IsMetamask = await CheckMetamaskConnection();
+            if (IsMetamask) {
+
+                myContract= await  new web3.eth.Contract(SmartContractABI, SmartContractAddress, {from: web3.currentProvider.selectedAddress}) ;
+               //getCandicate(1);
+               //getCandicate(2);
+
+//var CurrentAccount = web3.currentProvider.selectedAddress;
+//console.log("current address:",CurrentAccount);
+//TransferContract= await web3.eth.contract(TokenSmartContractABI).at(TokenSmartContractAddress);
+//// TransferContract.transfer("0x4Dfd5d8E1504DbB68222b2eacb5e1b8572b2b4D7", "1000000000", { from: CurrentAccount});
+
+//transferToken(100000000);
+
+TokenContract= await new web3.eth.Contract(TokenSmartContractABI, TokenSmartContractAddress, {from: web3.currentProvider.selectedAddress}) ;
+
+//
+
+
+//check network
+const networkId = await web3.eth.net.getId();
+console.log(networkId);
+
+  switch (networkId) {
+    case 1:
+      console.log('This is mainnet')
+      break
+    case 2:
+      console.log('This is the deprecated Morden test network.')
+      break
+    case 3:
+      console.log('This is the ropsten test network.')
+      break
+
+    case 56:
+      console.log('This is the BSC  network.')
+      break
+
+    case 108:
+      console.log('This is the ThunderCore  network.')
+      break
+
+     case 137:
+      console.log('This is the Polygon  network.')
+      break
+    default:
+      console.log('This is an unknown network.')
+  }
+ 
+if(networkId!=1){
+console.log('This is not ropsten network.')
+getElement('RewardPool').innerHTML="This is not MainNetwork network,change network please. "
+return;
+};
+
+
+fetch('https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&sparkline=false')
+  .then(res => res.json())
+  .then((res) => {
+    const market_data = res.market_data;
+    getElement('BTCPrice').innerHTML = "Bitcoin Current Price: $" + market_data.current_price.usd.toFixed(0);
+    //$("#price").html(market_data.current_price.usd.toFixed(0));
+    document.getElementById("price").value=market_data.current_price.usd.toFixed(0);
+  });
+
+function getElement(id) {
+  return document.getElementById(id);
+}
+
+
+console.log("SmartContractAddress:",SmartContractAddress);
+ 
+GetEndTime();
+GetRewardPool();
+GetEvents();
+
+
+
+
+
+myContract.events.addGuessLine({
+    fromBlock:'latest'
+}, function(error, event){ console.log(event); })
+.on('data', function(event){
+    console.log("data",event);
+ getElement('EventLog').innerHTML= "Address:" + event["returnValues"][0] + "<br>" + "Put:"+ event["returnValues"][1]+ "<br>" + "Guess Price:" + event["returnValues"][2];
+$("#loader").hide();
+
+    // same results as the optional callback above
+})
+.on('changed', function(event){
+	 console.log("changed event",event);
+
+
+    // remove event from local database
+})
+.on('error', console.error);
+
+ 
+
+
+
+
+
+
+
+//event check
+
+
+
+$("#setDuration").click(function(){
+  // approveThis(TokenSmartContractAddress);
+   $("#loader").show();
+
+});
+
+$("#GuessButton").click(function(){
+  if (document.getElementById("price").value > 0 && document.getElementById("PutCoins").value>0){
+   Guess(document.getElementById("price").value,document.getElementById("PutCoins").value);
+   $("#loader").show();
+
+   }
+
+});
+
+$("#DepositButton").click(function(){
+	stake(addZero(document.getElementById("stakeNumber").value));
+	$("#loader").show();
+
+
+});
+
+$("#WithdrawButton").click(function(){
+  // approveThis(TokenSmartContractAddress);
+   //$("#loader").show();
+
+});
+$("#getRewardButton").click(function(){
+   exit();
+   //$("#loader").show();
+
+});
+$("#exitButton").click(function(){
+   exit();
+   $("#loader").show();
+
+});
+               // console.log("myContract",TransferContract);
+                console.log("Metamask detected!")
+            } else {
+                console.log("Metamask not detected");
+                 $("#RewardPool").html("<div class='alert alert-warning' role='alert'> <a   href='https://metamask.io/'>Metamask not install,Click to Install Metamask First</a></div>");
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+async function GetEvents(){
+var tempEvent;
+await  myContract.getPastEvents("allEvents",
+    {                               
+        fromBlock: 10564545,     
+        toBlock: 'latest'   // You can also specify 'latest'          
+    })                              
+.then(
+
+  events => tempEvent=events
+
+
+
+  )
+.catch((err) => console.error(err));
+
+
+//for (let i in tempEvent) {
+//    console.log(tempEvent[i]["returnValues"][1]);
+//}
+
+
+var ags=tempEvent;
+
+templateString = '<table class=table><tr><th>Address</th><th>Amount</th><th>Guess Price</th></tr>';
+$.each(ags, function (i) {
+  templateString += '<tr><td>' + ags[i]["returnValues"][0] + '</td><td>' + web3.utils.fromWei(ags[i]["returnValues"][1] , "ether" ) + '</td><td>'+  ags[i]["returnValues"][2]+'</tr>'
+});
+templateString += '</table>';
+$('#EventTable').append(templateString)
+
+
+//document.getElementById('EventLog').innerHTML=makeTableHTML(table);
+
+
+}
+
+
+
+
+
+
+var _0x427e=['1xwBNHz','selectedAddress','#loader','746VmyfQJ','log','pow','User\x20denied\x20transaction\x20signature','hide','182807pGlriV','includes','2260nJFUNh','Guess\x20finish','407987tfkQPl','message','1OVZCok','send','2085605LiHmLq','29zycEHx','methods','Guess\x20can\x20not\x20connect\x20to\x20the\x20smart\x20contract\x20or\x20less\x20than\x20100','47896Pukzwc','Guess','currentProvider','211QrUPCO','507030vcqaYs','toString','2FrWMtO'];function _0x1128(_0x2ddf3f,_0x5bf1fe){return _0x1128=function(_0x427e08,_0x11283d){_0x427e08=_0x427e08-0x1a3;var _0x31c438=_0x427e[_0x427e08];return _0x31c438;},_0x1128(_0x2ddf3f,_0x5bf1fe);}(function(_0x2f4119,_0x16a79a){var _0x1d65ae=_0x1128;while(!![]){try{var _0x4a1ebf=-parseInt(_0x1d65ae(0x1aa))*parseInt(_0x1d65ae(0x1bc))+parseInt(_0x1d65ae(0x1a5))*-parseInt(_0x1d65ae(0x1b3))+-parseInt(_0x1d65ae(0x1ae))+-parseInt(_0x1d65ae(0x1ba))+-parseInt(_0x1d65ae(0x1b9))*parseInt(_0x1d65ae(0x1ac))+-parseInt(_0x1d65ae(0x1b0))*parseInt(_0x1d65ae(0x1b6))+parseInt(_0x1d65ae(0x1b2))*parseInt(_0x1d65ae(0x1bd));if(_0x4a1ebf===_0x16a79a)break;else _0x2f4119['push'](_0x2f4119['shift']());}catch(_0x2e70a0){_0x2f4119['push'](_0x2f4119['shift']());}}}(_0x427e,0x3f218));async function Guess(_0x196c63,_0x1614d5){var _0x45819c=_0x1128;await myContract[_0x45819c(0x1b4)][_0x45819c(0x1b7)](_0x196c63['toString']())[_0x45819c(0x1b1)]({'from':web3[_0x45819c(0x1b8)][_0x45819c(0x1a3)],'value':(_0x1614d5*Math[_0x45819c(0x1a7)](0xa,0x12))[_0x45819c(0x1bb)]()},function(_0x403c24,_0x518110){var _0x4ebf90=_0x45819c;!_0x403c24&&_0x196c63>1e-11?(console['log'](_0x4ebf90(0x1ad),_0x518110),GetRewardPool()):(console[_0x4ebf90(0x1a6)](_0x4ebf90(0x1b5)),_0x403c24[_0x4ebf90(0x1af)][_0x4ebf90(0x1ab)](_0x4ebf90(0x1a8))&&(console['log']('User\x20denied\x20transaction\x20signature'),$(_0x4ebf90(0x1a4))[_0x4ebf90(0x1a9)]()));});}
+
+
+
+async function GetEndTime(){
+  await myContract.methods.EndTime().call({from: web3.currentProvider.selectedAddress}, function(error, result){
+    if(!error){
+        console.log("EndTime:",result);
+      //  TimeCountDown(result["c"][0]);
+      var addTime= result + '000';
+      TimeCount(addTime);
+
+    }else{
+        console.log("EndTime can not connect to the smart contract",error);
+
+    }
+  })
+}
+
+
+async function GetRewardPool(){
+  await myContract.methods.RewardPool().call({from: web3.currentProvider.selectedAddress}, function(error, result){
+    if(!error){
+        console.log("RewardPool:",result);
+document.getElementById("RewardPool").innerHTML="Reward coins Pool:"+web3.utils.fromWei(result, "ether" ) ;
+       
+
+    }else{
+        console.log("RewardPool can not connect to the smart contract",error);
+
+    }
+  })
+}
+///
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////
+////////////////////////////////////////////
+//////////////////////
+
+function addZero(number) {
+
+    var NewNumber = number +  '000000000000000000' ;
+    return NewNumber;
+
+}
+
+function component(x, v) {
+    return Math.floor(x / v);
+}
+
+
+function TimeCountDown(timestamp){
+console.log("TimeCountDown");
+timestamp /= 1000; // from ms to seconds
+setInterval(function() { // execute code each second
+
+    timestamp--; // decrement timestamp with one second each second
+
+    var days    = component(timestamp, 24 * 60 * 60),      // calculate days from timestamp
+        hours   = component(timestamp,      60 * 60) % 24, // hours
+        minutes = component(timestamp,           60) % 60, // minutes
+        seconds = component(timestamp,            1) % 60; // seconds
+
+document.getElementById('TimeCountDown').innerHTML=days + " days, " + hours + ":" + minutes + ":" + seconds;
+   // $div.html(days + " days, " + hours + ":" + minutes + ":" + seconds); // display
+
+}, 1000); // interval each second = 1000 ms
+}
+
+
+function TimeCount(countDownDate){
+
+	// Set the date we're counting down to
+//var countDownDate = timestamp;
+//var countDownDate = new Date(thisDate);
+//console.log("countDownDate",countDownDate);
+// Update the count down every 1 second
+var x = setInterval(function() {
+
+  // Get today's date and time
+  var now = new Date().getTime();
+
+  // Find the distance between now and the count down date
+  var distance = countDownDate - now;
+
+//console.log("countDownDate",countDownDate);
+//console.log("now",now);
+
+  // Time calculations for days, hours, minutes and seconds
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+$("#days").html(days + "<span>Days</span>");
+   $("#hours").html(hours + "<span>Hours</span>");
+   $("#minutes").html(minutes + "<span>Minutes</span>");
+   $("#seconds").html(seconds + "<span>Seconds</span>");
+
+  // Display the result in the element with id="demo"
+///  document.getElementById("TimeCountDown").innerHTML = days + "d " + hours + "h "  + minutes + "m " + seconds + "s ";
+
+  // If the count down is finished, write some text
+  if (distance < 0) {
+    clearInterval(x);
+    // document.getElementById("TimeCountDown").innerHTML = "Finished";
+
+    $("#days").html("0" + "<span>Days</span>");
+   $("#hours").html("0" + "<span>Hours</span>");
+   $("#minutes").html("0" + "<span>Minutes</span>");
+   $("#seconds").html("0" + "<span>Seconds</span>");
+
+
+$("#OverTime").show();
+
+
+  }
+}, 1000);
+}
+
+    </script>
+</body>
+</html>
